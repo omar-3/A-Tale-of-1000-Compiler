@@ -1,7 +1,12 @@
 package pascal.frontend;
 
+import pascal.message.Message;
+import pascal.message.MessageProducer;
+
 import java.io.BufferedReader;
 import java.io.IOException;
+
+import static pascal.message.MessageType.SOURCE_LINE;
 
 /**
  * <h1>Source</h1>
@@ -9,7 +14,7 @@ import java.io.IOException;
  * <p>The framework class that represents the source program.</p>
  */
 
-public class Source {
+public class Source implements MessageProducer {
     public static final char EOL = '\n';            // end-of-line character
     public static final char EOF = (char) 0;        // end-of-file character
 
@@ -104,11 +109,15 @@ public class Source {
     private void readLine()
         throws IOException
     {
-        line = reader.readLine();
-        currentPos = -1;
+        line = reader.readLine();   // null when at the end of the source
+        currentPos = 0;
 
         if (line != null) {
             ++lineNum;
+        }
+
+        if (line != null) {
+            sendMessage(new Message(SOURCE_LINE, new Object[] {lineNum, line}));
         }
     }
 

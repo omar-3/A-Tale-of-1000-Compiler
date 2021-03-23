@@ -2,6 +2,7 @@ package pascal.frontend;
 
 import pascal.intermediate.ICode;
 import pascal.intermediate.SymTab;
+import pascal.message.MessageProducer;
 
 /**
  * <h1>Parser</h1>
@@ -10,11 +11,14 @@ import pascal.intermediate.SymTab;
  * will be implemented by language-specific subclasses.</p>
  */
 
-public abstract class Parser {
+public abstract class Parser implements MessageProducer
+{
     protected static SymTab symTab;     // generated symbol table
+    protected static MessageHandler messageHandler;
 
     static {
         symTab = null;
+        messageHandler = null;
     }
 
     protected Scanner scanner;          // scanner used with this parser
@@ -64,6 +68,33 @@ public abstract class Parser {
         throws Exception
     {
         return scanner.nextToken();
+    }
+
+    /**
+     * Add a parser message listener.
+     * @param listener the message listener to add.
+     */
+    public void addMessageListener(MessageListener listener)
+    {
+        messageHandler.addListener(listener);
+    }
+
+    /**
+     * Remove a parser message listener.
+     * @param listener the message listener to remove.
+     */
+    public void removeMessageListener(MessageListener listener)
+    {
+        messageHandler.removeListener(listener);
+    }
+
+    /**
+     * Notify listeners after setting the message.
+     * @param message the message to set.
+     */
+    public void sendMessage(Message message)
+    {
+        messageHandler.sendMessage(message);
     }
 
 }
